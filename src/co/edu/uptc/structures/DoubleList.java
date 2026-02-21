@@ -7,76 +7,88 @@ import java.util.List;
 import java.util.ListIterator;
 
 public class DoubleList<T> implements List<T> {
-    private Node<T> head;
-    private Node<T> tail;
-    private int size;
-    
-    public DoubleList() {
-    	head = null;
-    	tail = null;
-    	size = 0;
-    }
-    
+	private Node<T> head;
+	private Node<T> tail;
+	private int size;
+
+	public DoubleList() {
+		head = null;
+		tail = null;
+		size = 0;
+	}
+
 	@Override
 	public int size() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public boolean isEmpty() {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	@Override
 	public boolean contains(Object o) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	@Override
 	public Iterator<T> iterator() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public Object[] toArray() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public <T> T[] toArray(T[] a) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public boolean add(T e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	@Override
 	public boolean remove(Object o) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	@Override
 	public boolean containsAll(Collection<?> c) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	@Override
 	public boolean addAll(Collection<? extends T> c) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	@Override
 	public boolean addAll(int index, Collection<? extends T> c) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	@Override
 	public boolean removeAll(Collection<?> c) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	@Override
 	public boolean retainAll(Collection<?> c) {
 		boolean hasChanged = false;
@@ -92,56 +104,99 @@ public class DoubleList<T> implements List<T> {
 
 		return hasChanged;
 	}
+
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-		
+
 	}
+
 	@Override
 	public T get(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public T set(int index, T element) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public void add(int index, T element) {
 		// TODO Auto-generated method stub
-		
+
 	}
+
 	@Override
 	public T remove(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public int indexOf(Object o) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public int lastIndexOf(Object o) {
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
 	@Override
 	public ListIterator<T> listIterator() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public ListIterator<T> listIterator(int index) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 	@Override
 	public List<T> subList(int fromIndex, int toIndex) {
-		// TODO Auto-generated method stub
-		return null;
+		if (fromIndex < 0 || toIndex > size || fromIndex > toIndex) {
+			throw new IndexOutOfBoundsException("indices fuera de rango");
+		}
+		DoubleList<T> list = new DoubleList<>();
+		Node<T> current = head;
+		current = searchOrder(current, fromIndex);
+		for (int i = fromIndex; i < toIndex; i++) {
+			list.add(current.getValue());
+			current = current.getNext();
+		}
+		return list;
 	}
 
-    
+	private Node<T> searchOrder(Node<T> current, int fromIndex) {
+		if (fromIndex < size / 2) {
+			current = head;
+			orderFromHead(current, fromIndex);
+		} else {
+			current = tail;
+			orderFromTail(current, fromIndex);
+		}
+		return current;
+	}
+
+	private Node<T> orderFromHead(Node<T> current, int fromIndex) {
+		for (int i = 0; i < fromIndex; i++) {
+			current = current.getNext();
+		}
+		return current;
+	}
+
+	private Node<T> orderFromTail(Node<T> current, int fromIndex) {
+		for (int i = size - 1; i > fromIndex; i--) {
+			current = current.getPrevious();
+		}
+		return current;
+	}
+
 }
