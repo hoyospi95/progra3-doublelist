@@ -573,6 +573,8 @@ public boolean addAll(int index, Collection<? extends T> c) {
         return new ListIterator<T>() {
             private Node<T> cursor = initializeCursor();
             private int cursorIndex = index;
+            private Node<T> lastReturned=null;
+            private int lastReturnedIndex=-1;
             private Node<T> initializeCursor() {
                 if (index == size) {
                     return null;
@@ -600,6 +602,8 @@ public boolean addAll(int index, Collection<? extends T> c) {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
+                lastReturned = cursor;
+                lastReturnedIndex = cursorIndex;
                 T value = cursor.getValue();
                 cursor = cursor.getNext();
                 cursorIndex++;
@@ -619,12 +623,15 @@ public boolean addAll(int index, Collection<? extends T> c) {
                 }
                 if (cursor == null) {
                     cursor = tail;
+                    cursorIndex = size - 1;
                 } else {
                     cursor = cursor.getPrevious();
+                    cursorIndex--;
                 }
-                cursorIndex--;
-                return cursor.getValue();
-           }
+                lastReturned = cursor;
+                lastReturnedIndex = cursorIndex;
+                return cursor.getValue();    
+            }
             @Override
             public int nextIndex() {
                 return cursorIndex;
@@ -635,15 +642,43 @@ public boolean addAll(int index, Collection<? extends T> c) {
             }
             @Override
             public void remove() {
-                throw new UnsupportedOperationException();
-           }
+                if (lastReturned == null) {
+	                throw new IllegalStateException();
+	            }
+	            Node<T> prev = lastReturned.getPrevious();
+	            Node<T> next = lastReturned.getNext();
+	            if (prev == null) {
+	                head = next;
+	            } else {
+	                prev.setNext(next);
+	            }
+	            if (next == null) {
+	                tail = prev;
+	            } else {
+	                next.setPrevious(prev);
+	            }
+	            if (cursor == lastReturned) {
+	                cursor = next;
+	            } else {
+	                cursorIndex--;
+	            }
+	            size--;
+	            lastReturned = null;
+	            lastReturnedIndex = -1;
+            }
             @Override
             public void set(T e) {
-                throw new UnsupportedOperationException();
+                if (lastReturned == null) {
+	                throw new IllegalStateException();
+	            }
+	            lastReturned.setValue(e);
             }
             @Override
             public void add(T e) {
-                throw new UnsupportedOperationException();
+                DoubleList.this.add(cursorIndex, e);
+	            cursorIndex++;
+	            lastReturned = null;
+	            lastReturnedIndex = -1;
             }
         };
 	}
